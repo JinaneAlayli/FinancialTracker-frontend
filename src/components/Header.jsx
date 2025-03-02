@@ -1,6 +1,6 @@
-import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Button } from "@mui/material";
-import { AccountCircle, Menu as MenuIcon, Add } from "@mui/icons-material";
 import { useState } from "react";
+import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Button, MenuList, Popper, Paper, ClickAwayListener, Grow } from "@mui/material";
+import { AccountCircle, Menu as MenuIcon, Add, Group } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -8,6 +8,8 @@ export default function Header({ onMenuToggle }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [plusAnchorEl, setPlusAnchorEl] = useState(null);
+  const plusOpen = Boolean(plusAnchorEl);
 
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
@@ -15,7 +17,9 @@ export default function Header({ onMenuToggle }) {
     logout();
     navigate("/login");
   };
-
+  const handlePlusClick = (event) => {
+    setPlusAnchorEl(plusAnchorEl ? null : event.currentTarget);
+  };
   return (
     <AppBar position="static">
       <Toolbar>
@@ -25,9 +29,32 @@ export default function Header({ onMenuToggle }) {
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           Financial Tracker
         </Typography>
+        <IconButton color="inherit" onClick={handlePlusClick}>
+          <Add />
+        </IconButton>
+        <Popper open={plusOpen} anchorEl={plusAnchorEl} role={undefined} transition disablePortal>
+          {({ TransitionProps }) => (
+            <Grow {...TransitionProps}>
+              <Paper>
+                <ClickAwayListener onClickAway={() => setPlusAnchorEl(null)}>
+                  <MenuList autoFocusItem>
+                    <MenuItem onClick={() => navigate("/add-expense")}>Add Expense</MenuItem>
+                    <MenuItem onClick={() => navigate("/add-income")}>Add Income</MenuItem>
+                    {user?.role === "super_admin" && (
+                      <MenuItem onClick={() => navigate("/add-admin")}>Add Admin</MenuItem>
+                    )}
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
  
-        <Button color="inherit" startIcon={<Add />}>Add Expense</Button>
-        <Button color="inherit" startIcon={<Add />}>Add Income</Button>
+        {user?.role === "super_admin" && (
+          <IconButton color="inherit" onClick={() => navigate("/manage-admins")}>
+            <Group />
+          </IconButton>
+        )}
  
         <IconButton color="inherit" onClick={handleMenuOpen}>
           <AccountCircle />

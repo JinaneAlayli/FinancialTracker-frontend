@@ -3,6 +3,8 @@ import { useAuth } from "./context/AuthContext";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import ManageAdmins from "./pages/ManageAdmins";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -11,9 +13,19 @@ export default function App() {
 
   return (
     <Routes>
-      <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
-    </Routes>
+ 
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Home />} />
+          </Route>
+ 
+          <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
+            <Route path="/manage-admins" element={<ManageAdmins />} />
+          </Route>
+ 
+          <Route path="*" element={<h2 style={{ textAlign: "center", marginTop: "50px", color: "red" }}> Page Not Found </h2>} />
+        </Routes>
+ 
   );
 }
