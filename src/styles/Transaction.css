@@ -1,0 +1,112 @@
+
+.transaction-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .transaction-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .transaction-header select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .transaction-header button {
+    padding: 10px 15px;
+    background: #3b3d3c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+   
+  .transaction-summary {
+     
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+  }
+   
+  .transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .transaction-table th, 
+  .transaction-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .transaction-table th {
+    background: #3b3d3c;
+    color: white;
+  }
+  
+  .transaction-table tr:nth-child(even) {
+    background: #f9f9f9;
+  }
+  
+  .transaction-table tr:hover {
+    background: #f1f1f1;
+  }
+   
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .popup-container {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 50%;
+    text-align: center;
+  }
+  
+  .popup-container h2 {
+    margin-bottom: 20px;
+  }
+  
+  .popup-container input, 
+  .popup-container select {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .popup-container button {
+    padding: 10px 15px;
+    margin-top: 10px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .popup-container button[type="submit"] {
+    background: #3b3d3c;
+    color: white;
+  }
+  
+  .popup-container button[type="button"] {
+    background: #3b3d3c;
+    color: white;
+  }
+  
