@@ -3,6 +3,7 @@ import TransactionForm from "../components/TransactionForm";
 import DashboardLayout from "../layouts/DashboardLayout";
 import "../styles/Transaction.css";
 import axios from "axios";
+import { useSearchParams } from "react-router-dom";
 
 export default function Income() {
   const [incomes, setIncomes] = useState([]);
@@ -12,10 +13,18 @@ export default function Income() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [categories, setCategories] = useState({});
   const [loading, setLoading] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     fetchData();
     fetchCategories();
+
+    if (searchParams.get("add") === "true") {
+      setOpenForm(true);
+      setSearchParams({}); 
+    }
+
+
   }, []);
 
   const fetchData = async () => {

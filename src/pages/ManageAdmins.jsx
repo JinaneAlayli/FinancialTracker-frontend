@@ -5,6 +5,8 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AdminPopup from "../components/AdminPopup";
+import { useSearchParams } from "react-router-dom";
+
 
 export default function ManageAdmins() {
   const { user } = useAuth();
@@ -12,9 +14,16 @@ export default function ManageAdmins() {
   const [filter, setFilter] = useState("all");
   const [open, setOpen] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
  
   useEffect(() => {
     fetchAdmins();
+
+    if (searchParams.get("add") === "true") {
+      setOpen(true);
+      setSearchParams({}); 
+    }
+
   }, []);
 
   const fetchAdmins = async () => {

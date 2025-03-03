@@ -38,10 +38,10 @@ export default function Header({ onMenuToggle }) {
               <Paper>
                 <ClickAwayListener onClickAway={() => setPlusAnchorEl(null)}>
                   <MenuList autoFocusItem>
-                    <MenuItem onClick={() => navigate("/add-expense")}>Add Expense</MenuItem>
-                    <MenuItem onClick={() => navigate("/add-income")}>Add Income</MenuItem>
+                    <MenuItem onClick={() => navigate("/expenses?add=true")}>Add Expense</MenuItem>
+                    <MenuItem onClick={() => navigate("/incomes?add=true")}>Add Income</MenuItem>
                     {user?.role === "super_admin" && (
-                      <MenuItem onClick={() => navigate("/add-admin")}>Add Admin</MenuItem>
+                      <MenuItem onClick={() => navigate("/manage-admins?add=true")}>Add Admin</MenuItem>
                     )}
                   </MenuList>
                 </ClickAwayListener>
