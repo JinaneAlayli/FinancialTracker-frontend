@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import ManageAdmins from "./pages/ManageAdmins";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Income from "./pages/Income";
+import Expense from "./pages/Expense";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -18,6 +20,9 @@ export default function App() {
  
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
+            <Route path="/incomes" element={<Income />} />
+            <Route path="/expenses" element={<Expense />} />
+
           </Route>
  
           <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
