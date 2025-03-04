@@ -5,6 +5,7 @@ import {
     TableContainer, TableHead, TableRow, Paper, IconButton, MenuItem, Select, FormControl, InputLabel
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DashboardLayout from "../layouts/DashboardLayout";
 
 const API_URL = "http://localhost:5000/categories";
 
@@ -49,6 +50,7 @@ export default function Categories() {
     };
 
     return (
+        <DashboardLayout>
         <Container maxWidth="md">
             <Typography variant="h4" gutterBottom>Categories</Typography>
             
@@ -102,5 +104,6 @@ export default function Categories() {
                 </Table>
             </TableContainer>
         </Container>
+        </DashboardLayout>
     );
 }

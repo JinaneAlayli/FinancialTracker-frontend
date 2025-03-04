@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Income from "./pages/Income";
 import Expense from "./pages/Expense";
 import Categories from "./pages/Categories";
+import Reports from "./pages/Reports";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -24,6 +25,7 @@ export default function App() {
             <Route path="/incomes" element={<Income />} />
             <Route path="/expenses" element={<Expense />} />
             <Route path="/categories" element={<Categories />} />
+            <Route path="/reports" element={<Reports />} />
 
           </Route>
  
