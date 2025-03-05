@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/TransactionForm.css";
 
-export default function TransactionForm({ onClose, refreshData, type }) {
+export default function TransactionForm({ onClose, refreshData, type, selectedTransaction }) {
   const isIncome = type === "income";
+  const isEdit = !!selectedTransaction;
   const [activeTab, setActiveTab] = useState("fixed");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -11,14 +12,20 @@ export default function TransactionForm({ onClose, refreshData, type }) {
   const [currency, setCurrency] = useState("USD");
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState("");
-  const [date_time, setDateTime] = useState("");
+  const [dateTime, setDateTime] = useState("");
   const [frequency, setFrequency] = useState("monthly");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+    if (isEdit) {
+      loadTransactionData();
+    } else {
+      resetForm();
+    }
+  }, [selectedTransaction]);
 
   const fetchCategories = async () => {
     try {
@@ -29,35 +36,92 @@ export default function TransactionForm({ onClose, refreshData, type }) {
     }
   };
 
+  const loadTransactionData = () => {
+    setTitle(selectedTransaction.title || "");
+    setDescription(selectedTransaction.description || "");
+    setAmount(selectedTransaction.amount || "");
+    setCurrency(selectedTransaction.currency || "USD");
+    setCategory(selectedTransaction.category_id || "");
+
+    if (selectedTransaction.date_time) {
+      setActiveTab("fixed");
+      setDateTime(selectedTransaction.date_time.split("T")[0]); // Fix date display issue
+    } else {
+      setActiveTab("recurring");
+      setFrequency(selectedTransaction.frequency || "monthly");
+      setStartDate(selectedTransaction.start_date || "");
+      setEndDate(selectedTransaction.end_date || "");
+    }
+  };
+
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setAmount("");
+    setCurrency("USD");
+    setCategory("");
+    setDateTime("");
+    setFrequency("monthly");
+    setStartDate("");
+    setEndDate("");
+    setActiveTab("fixed");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     const baseData = { title, description, amount, currency, category_id: category };
 
-    if (activeTab === "fixed") {
-      baseData.date_time = date_time;
-      await axios.post(`http://localhost:5000/${type}s`, baseData, { withCredentials: true });
-    } else {
-      baseData.frequency = frequency;
-      baseData.start_date = startDate;
-      baseData.end_date = endDate;
-      await axios.post(`http://localhost:5000/recurring_${type}`, baseData, { withCredentials: true });
-    }
+    try {
+      if (isEdit) {
+        if (activeTab === "fixed") {
+          baseData.date_time = dateTime;
+          await axios.put(`http://localhost:5000/${type}s/${selectedTransaction.id}`, baseData, { withCredentials: true });
+        } else {
+          baseData.frequency = frequency;
+          baseData.start_date = startDate;
+          baseData.end_date = endDate;
+          await axios.put(`http://localhost:5000/recurring_${type}/${selectedTransaction.id}`, baseData, { withCredentials: true });
+        }
+      } else {
+        if (activeTab === "fixed") {
+          baseData.date_time = dateTime;
+          await axios.post(`http://localhost:5000/${type}s`, baseData, { withCredentials: true });
+        } else {
+          baseData.frequency = frequency;
+          baseData.start_date = startDate;
+          baseData.end_date = endDate;
+          await axios.post(`http://localhost:5000/recurring_${type}`, baseData, { withCredentials: true });
+        }
+      }
 
-    refreshData();
-    onClose();
+      onClose();
+      refreshData();
+      resetForm(); // Reset form after successful submission
+    } catch (err) {
+      console.error("Error in Request:", err.response?.data || err);
+      setError(err.response?.data?.error || "Operation failed");
+    }
   };
 
   return (
     <div className="popup-overlay">
       <div className="popup-container">
-        <div className="tab-switch">
-          <button className={activeTab === "fixed" ? "active" : ""} onClick={() => setActiveTab("fixed")}>
-            {isIncome ? "Fixed Income" : "Fixed Expense"}
-          </button>
-          <button className={activeTab === "recurring" ? "active" : ""} onClick={() => setActiveTab("recurring")}>
-            {isIncome ? "Recurring Income" : "Recurring Expense"}
-          </button>
-        </div>
+        <h2>{isEdit ? "Edit Transaction" : "Add Transaction"}</h2>
+
+        {error && <p className="error-message">{error}</p>}
+
+        {!isEdit && (
+          <div className="tab-switch">
+            <button className={activeTab === "fixed" ? "active" : ""} onClick={() => setActiveTab("fixed")}>
+              {isIncome ? "Fixed Income" : "Fixed Expense"}
+            </button>
+            <button className={activeTab === "recurring" ? "active" : ""} onClick={() => setActiveTab("recurring")}>
+              {isIncome ? "Recurring Income" : "Recurring Expense"}
+            </button>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
@@ -80,7 +144,7 @@ export default function TransactionForm({ onClose, refreshData, type }) {
           </select>
 
           {activeTab === "fixed" && (
-            <input type="date" value={date_time} onChange={(e) => setDateTime(e.target.value)} required />
+            <input type="date" value={dateTime} onChange={(e) => setDateTime(e.target.value)} required />
           )}
 
           {activeTab === "recurring" && (
@@ -95,11 +159,10 @@ export default function TransactionForm({ onClose, refreshData, type }) {
             </>
           )}
 
-          <button type="submit">Save</button>
+          <button type="submit">{isEdit ? "Save Changes" : "Save"}</button>
           <button type="button" onClick={onClose}>Cancel</button>
         </form>
       </div>
     </div>
   );
 }
- 
