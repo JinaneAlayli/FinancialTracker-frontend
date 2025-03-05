@@ -3,28 +3,21 @@ import TransactionForm from "../components/TransactionForm";
 import DashboardLayout from "../layouts/DashboardLayout";
 import "../styles/Transaction.css";
 import axios from "axios";
-import { useSearchParams } from "react-router-dom";
+import { Edit, Delete } from "@mui/icons-material";
 
 export default function Income() {
   const [incomes, setIncomes] = useState([]);
   const [filteredIncomes, setFilteredIncomes] = useState([]);
   const [filter, setFilter] = useState("all");
   const [openForm, setOpenForm] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
   const [categories, setCategories] = useState({});
   const [loading, setLoading] = useState(true);
-  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     fetchData();
     fetchCategories();
-
-    if (searchParams.get("add") === "true") {
-      setOpenForm(true);
-      setSearchParams({}); 
-    }
-
-
   }, []);
 
   const fetchData = async () => {
@@ -33,12 +26,12 @@ export default function Income() {
       const fixedIncome = await axios.get("http://localhost:5000/incomes", { withCredentials: true });
       const recurringIncome = await axios.get("http://localhost:5000/recurring_income", { withCredentials: true });
 
-      const combinedData = [...fixedIncome.data, ...recurringIncome.data];
+      const combinedData = [...fixedIncome.data, ...recurringIncome.data].filter(item => !item.is_deleted);
       setIncomes(combinedData);
       filterData(combinedData, filter);
       setLoading(false);
     } catch (err) {
-      console.error(" Error fetching incomes:", err);
+      console.error("Error fetching incomes:", err);
       setLoading(false);
     }
   };
@@ -76,6 +69,22 @@ export default function Income() {
     filterData(incomes, filter);
   }, [filter, incomes]);
 
+  const handleDelete = async (id, isRecurring) => {
+    if (!window.confirm("Are you sure you want to delete this income?")) return;
+
+    try {
+      await axios.patch(
+        `http://localhost:5000/${isRecurring ? "recurring_income" : "incomes"}/${id}`,
+        { is_deleted: true },
+        { withCredentials: true }
+      );
+      fetchData();
+    } catch (err) {
+      console.error("Error deleting income:", err);
+      alert("Failed to delete income");
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="transaction-container">
@@ -85,12 +94,12 @@ export default function Income() {
             <option value="fixed">Fixed Income</option>
             <option value="recurring">Recurring Income</option>
           </select>
-          <button onClick={() => setOpenForm(true)}>+ Add Income</button>
+          <button onClick={() => { setSelectedTransaction(null); setOpenForm(true); }}>+ Add Income</button>
         </div>
 
         <div className="transaction-summary">Total: ${totalAmount}</div>
 
-        {openForm && <TransactionForm onClose={() => setOpenForm(false)} refreshData={fetchData} type="income" />}
+        {openForm && <TransactionForm onClose={() => setOpenForm(false)} refreshData={fetchData} type="income" selectedTransaction={selectedTransaction} />}
 
         {loading ? (
           <p>Loading incomes...</p>
@@ -101,6 +110,7 @@ export default function Income() {
             <thead>
               <tr>
                 <th>Title</th>
+                {filter === "all" && <th>Description</th>} {/* Show Description only for 'all' filter */}
                 <th>Amount</th>
                 <th>Currency</th>
                 {filter === "fixed" && <th>Date</th>}
@@ -112,12 +122,14 @@ export default function Income() {
                   </>
                 )}
                 <th>Category</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredIncomes.map((income, index) => (
-                <tr key={index}>
+              {filteredIncomes.map((income) => (
+                <tr key={income.id}>
                   <td>{income.title}</td>
+                  {filter === "all" && <td>{income.description || "No description"}</td>} {/* Show only if filter is 'all' */}
                   <td>{income.amount}</td>
                   <td>{income.currency}</td>
                   {filter === "fixed" && <td>{income.date_time}</td>}
@@ -129,6 +141,14 @@ export default function Income() {
                     </>
                   )}
                   <td>{categories[income.category_id] || "Uncategorized"}</td>
+                  <td>
+                    <button onClick={() => { setSelectedTransaction(income); setOpenForm(true); }}>
+                      <Edit />
+                    </button>
+                    <button onClick={() => handleDelete(income.id, !!income.frequency)}>
+                      <Delete style={{ color: "red" }} />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
