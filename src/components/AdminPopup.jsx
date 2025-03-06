@@ -1,19 +1,22 @@
 import { useState, useEffect } from "react";
-import { TextField, Button, Alert } from "@mui/material";
 import axios from "axios";
-import "../styles/AdminPopup.css"; 
+import styles from "../styles/TransactionForm.module.css";
 
 export default function AdminPopup({ open, onClose, selectedAdmin, refreshAdmins }) {
-  const isEdit = !!selectedAdmin; 
+  const isEdit = !!selectedAdmin;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState(""); 
+  const [password, setPassword] = useState("");
   const [role, setRole] = useState("admin");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     if (open) {
-      setError(""); 
+      setError("");
+      setSuccess(false);
+      setLoading(false);
       if (isEdit) {
         setName(selectedAdmin.name);
         setEmail(selectedAdmin.email);
@@ -30,8 +33,8 @@ export default function AdminPopup({ open, onClose, selectedAdmin, refreshAdmins
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setError("");
-
 
     try {
       if (isEdit) {
@@ -47,38 +50,70 @@ export default function AdminPopup({ open, onClose, selectedAdmin, refreshAdmins
           { withCredentials: true }
         );
       }
-      onClose(); 
-      refreshAdmins(); 
+      setSuccess(true);
+      setTimeout(() => {
+        onClose();
+        refreshAdmins();
+      }, 1500);
     } catch (err) {
-      console.error("Error in Request:", err.response?.data || err);
       setError(err.response?.data?.error || "Operation failed");
+      setLoading(false);
     }
   };
 
   return open ? (
-    <div className="popup-overlay">
-      <div className="popup-container">
-        <h2>{isEdit ? "Edit Admin" : "Add New Admin"}</h2>
-        {error && <Alert severity="error">{error}</Alert>}
+    <div className={styles.popupOverlay}>
+      <div className={styles.transactionFormContainer}>
+        <h2>{isEdit ? "Edit Admin" : "Add Admin"}</h2>
+        {error && <p className={styles.errorMessage}>{error}</p>}
+        {success && <p className={styles.success}>Success! Closing...</p>}
+
         <form onSubmit={handleSubmit}>
-          <TextField fullWidth label="Name" value={name} onChange={(e) => setName(e.target.value)} margin="normal" />
-          <TextField fullWidth label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} margin="normal" />
-          <TextField
-            fullWidth
-            label="Password"
-            type="password"
-            value={password}
-            placeholder={isEdit ? "Leave empty to keep current password" : ""}
-            onChange={(e) => setPassword(e.target.value)}
-            margin="normal"
-          />
-          <div className="popup-actions">
-            <Button type="submit" variant="contained" color="primary">
-              {isEdit ? "Save Changes" : "Add Admin"}
-            </Button>
-            <Button variant="outlined" color="error" onClick={onClose}>
+          <div className={styles.formGroup}>
+            <input
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              disabled={loading}
+              className={styles.fullWidth}
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={loading}
+              className={styles.fullWidth}
+            />
+            <input
+              type="password"
+              placeholder={isEdit ? "Leave empty to keep current password" : "Password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+              className={styles.fullWidth}
+            />
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className={styles.fullWidth}
+              disabled={loading}
+            >
+              <option value="admin">Admin</option>
+              <option value="super_admin">Super Admin</option>
+            </select>
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <button type="submit" className={styles.saveButton} disabled={loading}>
+              {loading ? "Processing..." : isEdit ? "Save " : "add"}
+            </button>
+            <button type="button" className={styles.cancelButton} onClick={onClose} disabled={loading}>
               Cancel
-            </Button>
+            </button>
           </div>
         </form>
       </div>
