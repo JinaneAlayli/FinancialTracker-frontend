@@ -1,0 +1,152 @@
+ 
+.transactionContainer {
+  width: 75%;
+  margin: 0 auto;
+  padding: 20px;
+}
+ 
+.filterContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  width: 100%;
+}
+ 
+.filterWrapper {
+  display: flex;
+  align-items: center;
+  width: 35%;
+  min-width: 200px;
+  position: relative;
+}
+ 
+.filterSelect {
+  flex: 1;
+  font-size: 18px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  appearance: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+ 
+.filterIcon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 20px;
+  color: #023047;
+}
+ 
+.addButton {
+  background: #ffb703;
+  color: white;
+  font-size: 18px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.addButton:hover {
+  background: #ff9a00;
+}
+ 
+.transactionHeader {
+  display: flex;
+  align-items: center;
+  background: url("../assets/transaction.png") no-repeat center;
+  background-size: cover;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.totalBox {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.icon {
+  width: 50px;
+  height: 50px;
+}
+
+.totalBox h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #023047;
+}
+
+.totalBox p {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: #023047;
+}
+ 
+.transactionTable {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+.transactionTable th, .transactionTable td {
+  padding: 12px;
+  text-align: left;
+}
+
+.transactionTable th {
+  background: #023047;
+  color: white;
+}
+
+.transactionTable tbody tr:nth-child(even) {
+  background: #f9f9f9;
+}
+ 
+.editButton, .deleteButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px;
+}
+
+.deleteButton {
+  color: red;
+}
+ 
+@media (max-width: 768px) {
+  .transactionContainer {
+    width: 90%;
+  }
+
+  .filterContainer {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .filterWrapper {
+    width: 50%;
+  }
+
+  .addButton {
+    width: 50%;
+    align-self: center;
+    margin-left: 0;
+  }
+
+  .transactionHeader {
+    flex-direction: column;
+    text-align: center;
+  }
+}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "../styles/TransactionForm.css";
+import styles from "../styles/TransactionForm.module.css";
 
 export default function TransactionForm({ onClose, refreshData, type, selectedTransaction }) {
   const isIncome = type === "income";
@@ -45,7 +45,7 @@ export default function TransactionForm({ onClose, refreshData, type, selectedTr
 
     if (selectedTransaction.date_time) {
       setActiveTab("fixed");
-      setDateTime(selectedTransaction.date_time.split("T")[0]); // Fix date display issue
+      setDateTime(selectedTransaction.date_time.split("T")[0]);
     } else {
       setActiveTab("recurring");
       setFrequency(selectedTransaction.frequency || "monthly");
@@ -91,14 +91,14 @@ export default function TransactionForm({ onClose, refreshData, type, selectedTr
         } else {
           baseData.frequency = frequency;
           baseData.start_date = startDate;
-          baseData.end_date = endDate;
+          baseData.endDate = endDate;
           await axios.post(`http://localhost:5000/recurring_${type}`, baseData, { withCredentials: true });
         }
       }
 
       onClose();
       refreshData();
-      resetForm(); // Reset form after successful submission
+      resetForm();
     } catch (err) {
       console.error("Error in Request:", err.response?.data || err);
       setError(err.response?.data?.error || "Operation failed");
@@ -106,61 +106,57 @@ export default function TransactionForm({ onClose, refreshData, type, selectedTr
   };
 
   return (
-    <div className="popup-overlay">
-      <div className="popup-container">
+    <div className={styles.popupOverlay}>
+      <div className={styles.transactionFormContainer}>
         <h2>{isEdit ? "Edit Transaction" : "Add Transaction"}</h2>
-
-        {error && <p className="error-message">{error}</p>}
+        {error && <p className={styles.errorMessage}>{error}</p>}
 
         {!isEdit && (
-          <div className="tab-switch">
-            <button className={activeTab === "fixed" ? "active" : ""} onClick={() => setActiveTab("fixed")}>
+          <div className={styles.tabSwitch}>
+            <button className={`${styles.tabButton} ${activeTab === "fixed" ? styles.active : ""}`} onClick={() => setActiveTab("fixed")}>
               {isIncome ? "Fixed Income" : "Fixed Expense"}
             </button>
-            <button className={activeTab === "recurring" ? "active" : ""} onClick={() => setActiveTab("recurring")}>
+            <button className={`${styles.tabButton} ${activeTab === "recurring" ? styles.active : ""}`} onClick={() => setActiveTab("recurring")}>
               {isIncome ? "Recurring Income" : "Recurring Expense"}
             </button>
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-          <textarea placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
-          <input type="number" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} required />
+          <div className={styles.formGroup}>
+            <input className={styles.fullWidth} type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            <textarea className={styles.fullWidth} placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+            <input className={styles.fullWidth} type="number" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} required />
+            <select className={styles.fullWidth} value={currency} onChange={(e) => setCurrency(e.target.value)}>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="LBP">LBP</option>
+            </select>
+            <select className={styles.fullWidth} value={category} onChange={(e) => setCategory(e.target.value)}>
+              <option value="">Select Category</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
 
-          <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="LBP">LBP</option>
-          </select>
-
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="">Select Category</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-
-          {activeTab === "fixed" && (
-            <input type="date" value={dateTime} onChange={(e) => setDateTime(e.target.value)} required />
-          )}
-
+          {activeTab === "fixed" && <input className={styles.fullWidth} type="date" value={dateTime} onChange={(e) => setDateTime(e.target.value)} required />}
           {activeTab === "recurring" && (
-            <>
-              <select value={frequency} onChange={(e) => setFrequency(e.target.value)}>
+            <div className={styles.formGroup}>
+              <select className={styles.fullWidth} value={frequency} onChange={(e) => setFrequency(e.target.value)}>
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
                 <option value="yearly">Yearly</option>
               </select>
-              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} required />
-              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} required />
-            </>
+              <input className={styles.fullWidth} type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} required />
+              <input className={styles.fullWidth} type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} required />
+            </div>
           )}
 
-          <button type="submit">{isEdit ? "Save Changes" : "Save"}</button>
-          <button type="button" onClick={onClose}>Cancel</button>
+          <div className={styles.buttonGroup}>
+            <button type="submit" className={styles.saveButton}>{isEdit ? "Save Changes" : "Save"}</button>
+            <button type="button" className={styles.cancelButton} onClick={onClose}>Cancel</button>
+          </div>
         </form>
       </div>
     </div>
