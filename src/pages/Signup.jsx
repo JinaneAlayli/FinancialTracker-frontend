@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/Signup.module.css";
 import axios from "axios";
+import { API_URL } from "../config/api";
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -24,7 +25,7 @@ export default function Signup() {
     setError("");
     
     try {
-      await axios.post("http://localhost:5000/users/signup", { name, email, password });
+      await axios.post(`${API_URL}`, { name, email, password });
       setSuccess(true); 
     } catch (err) {
       setError(err.response?.data?.error || "Signup failed");

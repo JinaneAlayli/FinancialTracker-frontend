@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../config/api";
 import {
     Container, Typography, TextField, Button, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, IconButton, MenuItem, Select, FormControl, InputLabel
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DashboardLayout from "../layouts/DashboardLayout";
-
-const API_URL = "http://localhost:5000/categories";
+ 
 
 export default function Categories() {
     const [categories, setCategories] = useState([]);
@@ -21,7 +21,7 @@ export default function Categories() {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get(API_URL, { withCredentials: true });
+            const response = await axios.get(`${API_URL}`, { withCredentials: true });
             setCategories(response.data);
         } catch (err) {
             setError(err.response?.data?.msg || "Error fetching categories");
@@ -31,7 +31,7 @@ export default function Categories() {
     const handleAddCategory = async () => {
         if (!newCategory.trim() || !categoryType) return;
         try {
-            await axios.post(API_URL, { name: newCategory, type: categoryType}, { withCredentials: true });
+            await axios.post(`${API_URL}`, { name: newCategory, type: categoryType}, { withCredentials: true });
             setNewCategory("");
             setCategoryType("");
             fetchCategories();

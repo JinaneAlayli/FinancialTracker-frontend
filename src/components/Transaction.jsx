@@ -3,6 +3,7 @@ import TransactionForm from "../components/TransactionForm";
 import DashboardLayout from "../layouts/DashboardLayout";
 import styles from "../styles/Transaction.module.css";
 import axios from "axios";
+import { API_URL } from "../config/api";
 import { useSearchParams } from "react-router-dom";
 import { FiEdit, FiTrash2, FiChevronDown } from "react-icons/fi";
 import incomeIcon from "../assets/income.png";
@@ -41,8 +42,8 @@ export default function Transaction({ type }) {
     try {
       setLoading(true);
       const [fixedData, recurringData] = await Promise.all([
-        axios.get(`http://localhost:5000/${type}s`, { withCredentials: true }),
-        axios.get(`http://localhost:5000/recurring_${type}`, { withCredentials: true })
+        axios.get(`${API_URL}/${type}s`, { withCredentials: true }),
+        axios.get(`${API_URL}/recurring_${type}`, { withCredentials: true })
       ]);
 
       const combinedData = [...fixedData.data, ...recurringData.data].filter(item => !item.is_deleted);
@@ -73,7 +74,7 @@ export default function Transaction({ type }) {
     }
 
     try {
-      const res = await axios.get("http://localhost:5000/categories", { withCredentials: true });
+      const res = await axios.get(`${API_URL}/categories`, { withCredentials: true });
       const categoryMap = res.data.reduce((map, cat) => {
         map[cat.id] = cat.name;
         return map;
@@ -88,7 +89,7 @@ export default function Transaction({ type }) {
 
   const fetchTotals = async (selectedFilter) => {
     try {
-      const response = await axios.get("http://localhost:5000/totals", { withCredentials: true });
+      const response = await axios.get(`${API_URL}/totals`, { withCredentials: true });
       const data = response.data;
 
       let total = 0;
@@ -121,7 +122,7 @@ export default function Transaction({ type }) {
     if (!window.confirm("Are you sure you want to delete this?")) return;
     try {
       await axios.patch(
-        `http://localhost:5000/${isRecurring ? `recurring_${type}` : `${type}s`}/${id}`,
+        `${API_URL}/${isRecurring ? `recurring_${type}` : `${type}s`}/${id}`,
         { is_deleted: true },
         { withCredentials: true }
       );

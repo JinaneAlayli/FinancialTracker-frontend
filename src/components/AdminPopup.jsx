@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "../styles/TransactionForm.module.css";
-
+import { API_URL } from "../config/api";
 export default function AdminPopup({ open, onClose, selectedAdmin, refreshAdmins }) {
   const isEdit = !!selectedAdmin;
   const [name, setName] = useState("");
@@ -39,13 +39,13 @@ export default function AdminPopup({ open, onClose, selectedAdmin, refreshAdmins
     try {
       if (isEdit) {
         await axios.put(
-          `http://localhost:5000/admins/${selectedAdmin.id}`,
+          `${API_URL}/admins/${selectedAdmin.id}`,
           { name, email, password: password ? password : undefined, role },
           { withCredentials: true }
         );
       } else {
         await axios.post(
-          "http://localhost:5000/users/signup",
+          `${API_URL}/users/signup`,
           { name, email, password, role },
           { withCredentials: true }
         );

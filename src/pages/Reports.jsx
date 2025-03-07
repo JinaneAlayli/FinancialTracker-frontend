@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Grid, Card, CardContent, Typography } from "@mui/material";
 import { Pie, Bar, Line } from "react-chartjs-2";
 import axios from "axios";
+import { API_URL } from "../config/api";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, PointElement, LineElement } from "chart.js";
 import DashboardLayout from "../layouts/DashboardLayout";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, PointElement, LineElement);
-
-const API_URL = "http://localhost:5000/reports";
+ 
 
 const Reports = () => {
     const [reportData, setReportData] = useState(null);

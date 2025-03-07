@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Container, Typography, TextField, Button, Alert } from "@mui/material";
 import axios from "axios";
+import { API_URL } from "../config/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -19,14 +20,14 @@ export default function Login() {
       
       
       await axios.post(
-        "http://localhost:5000/users/login", 
+        `${API_URL}/users/login`, 
         { email, password }, 
         { withCredentials: true }
       );
 
 
       const { data: userData } = await axios.get(
-        "http://localhost:5000/users/me", 
+        `${API_URL}/users/me`, 
         { withCredentials: true }
       );
 

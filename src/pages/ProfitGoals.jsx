@@ -6,15 +6,13 @@ import {
     deleteProfitGoal
 } from "./profitGoalService.jsx";
 import { Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
-import DashboardLayout from "../layouts/DashboardLayout";
-import { LinearProgress, Typography } from "@mui/material";
+import DashboardLayout from "../layouts/DashboardLayout"; 
 
 const ProfitGoals = () => {
     const [profitGoals, setProfitGoals] = useState([]);
     const [form, setForm] = useState({ target_amount: "", currency: "", target_date: "" });
     const [editingId, setEditingId] = useState(null);
-
-    // Fetch profit goals on component mount
+ 
     useEffect(() => {
         loadProfitGoals();
     }, []);

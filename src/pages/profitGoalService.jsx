@@ -1,8 +1,6 @@
 import axios from "axios";
-
-const API_URL = "http://localhost:5000/profitgoals"; // Change if needed
-
-// Get all profit goals
+import { API_URL } from "../config/api"; 
+ 
 export const fetchProfitGoals = async () => {
     try {
         const response = await axios.get(API_URL, { withCredentials: true });

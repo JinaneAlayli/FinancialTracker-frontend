@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { API_URL } from "../config/api";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AdminPopup from "../components/AdminPopup";
 import { useSearchParams } from "react-router-dom";
@@ -26,7 +27,7 @@ export default function ManageAdmins() {
 
   const fetchAdmins = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/admins", { withCredentials: true });
+      const response = await axios.get(`${API_URL}/admins`, { withCredentials: true });
       setAdmins(response.data);
     } catch (err) {
       console.error("Failed to fetch admins");
@@ -46,7 +47,7 @@ export default function ManageAdmins() {
   const handleDelete = async (id,name) => {
     if (!window.confirm(`Are you sure you want to delete ${name}?`)) return;
     try {
-      await axios.delete(`http://localhost:5000/admins/${id}`, { withCredentials: true });
+      await axios.delete(`${API_URL}/admins/${id}`, { withCredentials: true });
       fetchAdmins();
     } catch (err) {
       alert(err.response?.data?.error || "Failed to delete admin");

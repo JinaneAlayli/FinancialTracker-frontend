@@ -3,6 +3,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import ProfitCharts from "../components/ProfitCharts";
 import getMotivationMessage from "../utils/getMotivationMessage";
 import axios from "axios";
+import { API_URL } from "../config/api";
 import styles from "../styles/Home.module.css";
 import hiIcon from "../assets/hi.png";
 import transactionBg from "../assets/transaction.png";
@@ -23,10 +24,10 @@ export default function Home() {
 
   const fetchGoals = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/profitgoals", { withCredentials: true });
+      const res = await axios.get(`${API_URL}`, { withCredentials: true });
       setGoals(res.data);
       if (res.data.length > 0) {
-        setSelectedGoal(res.data[0].id); // Auto-select first goal
+        setSelectedGoal(res.data[0].id);  
       }
     } catch (err) {
       console.error("Error fetching goals:", err);
@@ -36,7 +37,7 @@ export default function Home() {
   const fetchGoalTotals = async (goalId) => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:5000/goal-totals/${goalId}`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/goal-totals/${goalId}`, { withCredentials: true });
       setTotals(res.data);
       setLoading(false);
     } catch (err) {

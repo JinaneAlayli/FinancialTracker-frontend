@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "../styles/TransactionForm.module.css";
+import { API_URL } from "../config/api";
 
 export default function TransactionForm({ onClose, refreshData, type, selectedTransaction }) {
   const isIncome = type === "income";
@@ -29,7 +30,7 @@ export default function TransactionForm({ onClose, refreshData, type, selectedTr
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/categories", { withCredentials: true });
+      const res = await axios.get(`${API_URL}/categories`, { withCredentials: true });
       setCategories(res.data);
     } catch (err) {
       console.error("Error fetching categories:", err);
@@ -77,22 +78,22 @@ export default function TransactionForm({ onClose, refreshData, type, selectedTr
       if (isEdit) {
         if (activeTab === "fixed") {
           baseData.date_time = dateTime;
-          await axios.put(`http://localhost:5000/${type}s/${selectedTransaction.id}`, baseData, { withCredentials: true });
+          await axios.put(`${API_URL}/${type}s/${selectedTransaction.id}`, baseData, { withCredentials: true });
         } else {
           baseData.frequency = frequency;
           baseData.start_date = startDate;
           baseData.end_date = endDate;
-          await axios.put(`http://localhost:5000/recurring_${type}/${selectedTransaction.id}`, baseData, { withCredentials: true });
+          await axios.put(`${API_URL}/recurring_${type}/${selectedTransaction.id}`, baseData, { withCredentials: true });
         }
       } else {
         if (activeTab === "fixed") {
           baseData.date_time = dateTime;
-          await axios.post(`http://localhost:5000/${type}s`, baseData, { withCredentials: true });
+          await axios.post(`${API_URL}/${type}s`, baseData, { withCredentials: true });
         } else {
           baseData.frequency = frequency;
           baseData.start_date = startDate;
           baseData.endDate = endDate;
-          await axios.post(`http://localhost:5000/recurring_${type}`, baseData, { withCredentials: true });
+          await axios.post(`${API_URL}/recurring_${type}`, baseData, { withCredentials: true });
         }
       }
 

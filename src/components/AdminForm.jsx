@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { TextField, Button, Alert } from "@mui/material";
 import axios from "axios";
+import { API_URL } from "../config/api";
 
 export default function AdminForm({ title, onSuccess }) {
   const [name, setName] = useState("");
@@ -13,7 +14,7 @@ export default function AdminForm({ title, onSuccess }) {
     setError("");
 
     try {
-      await axios.post("http://localhost:5000/users/signup", { name, email, password }, { withCredentials: true });
+      await axios.post(`${API_URL}/users/signup`, { name, email, password }, { withCredentials: true });
       onSuccess(); 
     } catch (err) {
       setError(err.response?.data?.error || "Failed to create account");
