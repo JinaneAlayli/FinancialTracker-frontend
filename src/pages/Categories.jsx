@@ -22,7 +22,7 @@ export default function Categories() {
     const fetchCategories = async () => {
         try {
             const response = await axios.get(`${API_URL}`, { withCredentials: true });
-            setCategories(response.data);
+            setCategories(Array.isArray(response.data) ? response.data : []);
         } catch (err) {
             setError(err.response?.data?.msg || "Error fetching categories");
         }
