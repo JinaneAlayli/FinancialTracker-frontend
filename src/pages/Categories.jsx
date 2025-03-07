@@ -21,7 +21,7 @@ export default function Categories() {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get(`${API_URL}`, { withCredentials: true });
+            const response = await axios.get(`${API_URL}/categories`, { withCredentials: true });
             setCategories(response.data);
         } catch (err) {
             setError(err.response?.data?.msg || "Error fetching categories");
@@ -31,7 +31,7 @@ export default function Categories() {
     const handleAddCategory = async () => {
         if (!newCategory.trim() || !categoryType) return;
         try {
-            await axios.post(`${API_URL}`, { name: newCategory, type: categoryType}, { withCredentials: true });
+            await axios.post(`${API_URL}/categories`, { name: newCategory, type: categoryType}, { withCredentials: true });
             setNewCategory("");
             setCategoryType("");
             fetchCategories();
@@ -42,7 +42,7 @@ export default function Categories() {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`${API_URL}/${id}`, { withCredentials: true });
+            await axios.delete(`${API_URL}/categories/${id}`, { withCredentials: true });
             fetchCategories();
         } catch (err) {
             setError(err.response?.data?.msg || "Error deleting category");
