@@ -19,7 +19,7 @@ const Reports = () => {
 
     const fetchReport = async () => {
         try {
-            const response = await axios.get(`${API_URL}?filter=${filter}`,{ withCredentials: true });
+            const response = await axios.get(`${API_URL}/reports?filter=${filter}`,{ withCredentials: true });
             setReportData(response.data);
         } catch (err) {
             console.error("Error fetching report:", err);
