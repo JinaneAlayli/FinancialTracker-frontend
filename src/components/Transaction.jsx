@@ -24,18 +24,25 @@ export default function Transaction({ type }) {
   useEffect(() => {
     fetchData();
     fetchCategories();
-    fetchTotals(); 
+    fetchTotals();
+
     if (searchParams.get("add") === "true") {
       setOpenForm(true);
       setSearchParams({});
     }
   }, []);
 
+  useEffect(() => {
+    filterData(transactions, filter);
+    fetchTotals();
+  }, [filter, transactions]);
+
   const fetchData = async () => {
     try {
       setLoading(true);
       const fixedData = await axios.get(`http://localhost:5000/${type}s`, { withCredentials: true });
       const recurringData = await axios.get(`http://localhost:5000/recurring_${type}`, { withCredentials: true });
+
       const combinedData = [...fixedData.data, ...recurringData.data].filter(item => !item.is_deleted);
       setTransactions(combinedData);
       filterData(combinedData, filter);
@@ -64,13 +71,15 @@ export default function Transaction({ type }) {
       const response = await axios.get("http://localhost:5000/totals", { withCredentials: true });
       const data = response.data;
 
+      let total = 0;
       if (filter === "all") {
-        setTotalAmount(isIncome ? data.totalIncome : data.totalExpense);
+        total = isIncome ? data.totalIncome : data.totalExpense;
       } else if (filter === "fixed") {
-        setTotalAmount(isIncome ? data.totalFixedIncome : data.totalFixedExpense);
+        total = isIncome ? data.totalFixedIncome : data.totalFixedExpense;
       } else if (filter === "recurring") {
-        setTotalAmount(isIncome ? data.totalRecurringIncome : data.totalRecurringExpense);
+        total = isIncome ? data.totalRecurringIncome : data.totalRecurringExpense;
       }
+      setTotalAmount(total);
     } catch (err) {
       console.error("Error fetching totals:", err);
     }
@@ -85,11 +94,6 @@ export default function Transaction({ type }) {
     }
     setFilteredTransactions(filtered);
   };
-
-  useEffect(() => {
-    filterData(transactions, filter);
-    fetchTotals(); 
-  }, [filter, transactions]);
 
   const handleDelete = async (id, isRecurring) => {
     if (!window.confirm("Are you sure you want to delete this?")) return;
@@ -149,6 +153,14 @@ export default function Transaction({ type }) {
                 <th>Description</th>
                 <th>Amount</th>
                 <th>Currency</th>
+                {filter === "fixed" && <th>Date</th>}
+                {filter === "recurring" && (
+                  <>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Frequency</th>
+                  </>
+                )}
                 <th>Category</th>
                 <th>Actions</th>
               </tr>
@@ -160,6 +172,14 @@ export default function Transaction({ type }) {
                   <td>{transaction.description || "No description"}</td>
                   <td>{transaction.amount}</td>
                   <td>{transaction.currency}</td>
+                  {filter === "fixed" && <td>{transaction.date_time}</td>}
+                  {filter === "recurring" && (
+                    <>
+                      <td>{transaction.start_date}</td>
+                      <td>{transaction.end_date}</td>
+                      <td>{transaction.frequency}</td>
+                    </>
+                  )}
                   <td>{categories[transaction.category_id] || "Uncategorized"}</td>
                   <td>
                     <button className={styles.editButton} onClick={() => { setSelectedTransaction(transaction); setOpenForm(true); }}>
