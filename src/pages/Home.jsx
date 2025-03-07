@@ -24,7 +24,7 @@ export default function Home() {
 
   const fetchGoals = async () => {
     try {
-      const res = await axios.get(`${API_URL}`, { withCredentials: true });
+      const res = await axios.get(`${API_URL}/profitgoals`, { withCredentials: true });
       setGoals(res.data);
       if (res.data.length > 0) {
         setSelectedGoal(res.data[0].id);  
