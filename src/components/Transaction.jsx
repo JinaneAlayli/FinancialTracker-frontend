@@ -24,7 +24,6 @@ export default function Transaction({ type }) {
   useEffect(() => {
     fetchData();
     fetchCategories();
-    fetchTotals();
 
     if (searchParams.get("add") === "true") {
       setOpenForm(true);
@@ -34,49 +33,70 @@ export default function Transaction({ type }) {
 
   useEffect(() => {
     filterData(transactions, filter);
-    fetchTotals();
+    fetchTotals(filter);
   }, [filter, transactions]);
 
   const fetchData = async () => {
+    let isMounted = true;
     try {
       setLoading(true);
-      const fixedData = await axios.get(`http://localhost:5000/${type}s`, { withCredentials: true });
-      const recurringData = await axios.get(`http://localhost:5000/recurring_${type}`, { withCredentials: true });
+      const [fixedData, recurringData] = await Promise.all([
+        axios.get(`http://localhost:5000/${type}s`, { withCredentials: true }),
+        axios.get(`http://localhost:5000/recurring_${type}`, { withCredentials: true })
+      ]);
 
       const combinedData = [...fixedData.data, ...recurringData.data].filter(item => !item.is_deleted);
-      setTransactions(combinedData);
-      filterData(combinedData, filter);
-      setLoading(false);
+
+      if (isMounted) {
+        setTransactions(combinedData);
+        filterData(combinedData, filter);
+        setLoading(false);
+      }
     } catch (err) {
-      console.error("Error fetching data:", err);
-      setLoading(false);
+      if (isMounted) {
+        console.error("Error fetching data:", err);
+        setLoading(false);
+      }
     }
+
+    return () => {
+      isMounted = false;
+    };
   };
 
   const fetchCategories = async () => {
+    const cachedCategories = localStorage.getItem("categories");
+
+    if (cachedCategories) {
+      setCategories(JSON.parse(cachedCategories));
+      return;
+    }
+
     try {
       const res = await axios.get("http://localhost:5000/categories", { withCredentials: true });
       const categoryMap = res.data.reduce((map, cat) => {
         map[cat.id] = cat.name;
         return map;
       }, {});
+
+      localStorage.setItem("categories", JSON.stringify(categoryMap));
       setCategories(categoryMap);
     } catch (err) {
       console.error("Error fetching categories:", err);
     }
   };
 
-  const fetchTotals = async () => {
+  const fetchTotals = async (selectedFilter) => {
     try {
       const response = await axios.get("http://localhost:5000/totals", { withCredentials: true });
       const data = response.data;
 
       let total = 0;
-      if (filter === "all") {
+      if (selectedFilter === "all") {
         total = isIncome ? data.totalIncome : data.totalExpense;
-      } else if (filter === "fixed") {
+      } else if (selectedFilter === "fixed") {
         total = isIncome ? data.totalFixedIncome : data.totalFixedExpense;
-      } else if (filter === "recurring") {
+      } else if (selectedFilter === "recurring") {
         total = isIncome ? data.totalRecurringIncome : data.totalRecurringExpense;
       }
       setTotalAmount(total);
@@ -86,12 +106,14 @@ export default function Transaction({ type }) {
   };
 
   const filterData = (data, selectedFilter) => {
-    let filtered = data;
+    let filtered = [...data];
+
     if (selectedFilter === "fixed") {
-      filtered = data.filter(item => item.date_time);
+      filtered = filtered.filter(item => item.date_time);
     } else if (selectedFilter === "recurring") {
-      filtered = data.filter(item => item.frequency);
+      filtered = filtered.filter(item => item.frequency);
     }
+
     setFilteredTransactions(filtered);
   };
 
@@ -103,11 +125,18 @@ export default function Transaction({ type }) {
         { is_deleted: true },
         { withCredentials: true }
       );
-      fetchData();
+      setTransactions(prev => prev.filter(item => item.id !== id));  
+      fetchTotals(filter);
     } catch (err) {
       console.error("Error deleting:", err);
       alert("Failed to delete");
     }
+  };
+
+  const handleNewTransaction = (newTransaction) => {
+    setTransactions(prev => [...prev, newTransaction]);
+    filterData([...transactions, newTransaction], filter);
+    fetchTotals(filter);
   };
 
   return (
@@ -139,7 +168,7 @@ export default function Transaction({ type }) {
           </div>
         </div>
 
-        {openForm && <TransactionForm onClose={() => setOpenForm(false)} refreshData={fetchData} type={type} selectedTransaction={selectedTransaction} />}
+        {openForm && <TransactionForm onClose={() => setOpenForm(false)} refreshData={fetchData} type={type} selectedTransaction={selectedTransaction} onTransactionAdded={handleNewTransaction} />}
 
         {loading ? (
           <p>Loading...</p>
