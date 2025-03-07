@@ -24,6 +24,7 @@ export default function Transaction({ type }) {
   useEffect(() => {
     fetchData();
     fetchCategories();
+    fetchTotals(); 
     if (searchParams.get("add") === "true") {
       setOpenForm(true);
       setSearchParams({});
@@ -58,6 +59,23 @@ export default function Transaction({ type }) {
     }
   };
 
+  const fetchTotals = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/totals", { withCredentials: true });
+      const data = response.data;
+
+      if (filter === "all") {
+        setTotalAmount(isIncome ? data.totalIncome : data.totalExpense);
+      } else if (filter === "fixed") {
+        setTotalAmount(isIncome ? data.totalFixedIncome : data.totalFixedExpense);
+      } else if (filter === "recurring") {
+        setTotalAmount(isIncome ? data.totalRecurringIncome : data.totalRecurringExpense);
+      }
+    } catch (err) {
+      console.error("Error fetching totals:", err);
+    }
+  };
+
   const filterData = (data, selectedFilter) => {
     let filtered = data;
     if (selectedFilter === "fixed") {
@@ -66,16 +84,11 @@ export default function Transaction({ type }) {
       filtered = data.filter(item => item.frequency);
     }
     setFilteredTransactions(filtered);
-    calculateTotal(filtered);
-  };
-
-  const calculateTotal = (data) => {
-    const total = data.reduce((acc, item) => acc + parseFloat(item.amount), 0);
-    setTotalAmount(total);
   };
 
   useEffect(() => {
     filterData(transactions, filter);
+    fetchTotals(); 
   }, [filter, transactions]);
 
   const handleDelete = async (id, isRecurring) => {
