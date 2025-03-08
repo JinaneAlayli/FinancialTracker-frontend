@@ -3,11 +3,11 @@ import TransactionForm from "../components/TransactionForm";
 import DashboardLayout from "../layouts/DashboardLayout";
 import styles from "../styles/Transaction.module.css";
 import axios from "axios";
-import { API_URL } from "../config/api";
 import { useSearchParams } from "react-router-dom";
 import { FiEdit, FiTrash2, FiChevronDown } from "react-icons/fi";
 import incomeIcon from "../assets/income.png";
 import expenseIcon from "../assets/expense.png";
+import { API_URL } from "../config/api";
 
 export default function Transaction({ type }) {
   const [transactions, setTransactions] = useState([]);
@@ -25,98 +25,71 @@ export default function Transaction({ type }) {
   useEffect(() => {
     fetchData();
     fetchCategories();
-
+    fetchTotals();
     if (searchParams.get("add") === "true") {
       setOpenForm(true);
       setSearchParams({});
     }
   }, []);
 
-  useEffect(() => {
-    filterData(transactions, filter);
-    fetchTotals(filter);
-  }, [filter, transactions]);
-
   const fetchData = async () => {
-    let isMounted = true;
     try {
       setLoading(true);
-      const [fixedData, recurringData] = await Promise.all([
-        axios.get(`${API_URL}/${type}s`, { withCredentials: true }),
-        axios.get(`${API_URL}/recurring_${type}`, { withCredentials: true })
-      ]);
-
+      const fixedData = await axios.get(`${API_URL}/${type}s`, { withCredentials: true });
+      const recurringData = await axios.get(`${API_URL}/recurring_${type}`, { withCredentials: true });
       const combinedData = [...fixedData.data, ...recurringData.data].filter(item => !item.is_deleted);
-
-      if (isMounted) {
-        setTransactions(combinedData);
-        filterData(combinedData, filter);
-        setLoading(false);
-      }
+      setTransactions(combinedData);
+      filterData(combinedData, filter);
+      setLoading(false);
     } catch (err) {
-      if (isMounted) {
-        console.error("Error fetching data:", err);
-        setLoading(false);
-      }
+      console.error("Error fetching data:", err);
+      setLoading(false);
     }
-
-    return () => {
-      isMounted = false;
-    };
   };
 
   const fetchCategories = async () => {
-    const cachedCategories = localStorage.getItem("categories");
-
-    if (cachedCategories) {
-      setCategories(JSON.parse(cachedCategories));
-      return;
-    }
-
     try {
       const res = await axios.get(`${API_URL}/categories`, { withCredentials: true });
       const categoryMap = res.data.reduce((map, cat) => {
         map[cat.id] = cat.name;
         return map;
       }, {});
-
-      localStorage.setItem("categories", JSON.stringify(categoryMap));
       setCategories(categoryMap);
     } catch (err) {
       console.error("Error fetching categories:", err);
     }
   };
 
-  const fetchTotals = async (selectedFilter) => {
+  const fetchTotals = async () => {
     try {
       const response = await axios.get(`${API_URL}/totals`, { withCredentials: true });
       const data = response.data;
-
-      let total = 0;
-      if (selectedFilter === "all") {
-        total = isIncome ? data.totalIncome : data.totalExpense;
-      } else if (selectedFilter === "fixed") {
-        total = isIncome ? data.totalFixedIncome : data.totalFixedExpense;
-      } else if (selectedFilter === "recurring") {
-        total = isIncome ? data.totalRecurringIncome : data.totalRecurringExpense;
+      if (filter === "all") {
+        setTotalAmount(isIncome ? data.totalIncome : data.totalExpense);
+      } else if (filter === "fixed") {
+        setTotalAmount(isIncome ? data.totalFixedIncome : data.totalFixedExpense);
+      } else if (filter === "recurring") {
+        setTotalAmount(isIncome ? data.totalRecurringIncome : data.totalRecurringExpense);
       }
-      setTotalAmount(total);
     } catch (err) {
       console.error("Error fetching totals:", err);
     }
   };
 
   const filterData = (data, selectedFilter) => {
-    let filtered = [...data];
-
+    let filtered = data;
     if (selectedFilter === "fixed") {
-      filtered = filtered.filter(item => item.date_time);
+      filtered = data.filter(item => item.date_time);
     } else if (selectedFilter === "recurring") {
-      filtered = filtered.filter(item => item.frequency);
+      filtered = data.filter(item => item.frequency);
     }
-
     setFilteredTransactions(filtered);
   };
+
+  useEffect(() => {
+    filterData(transactions, filter);
+    fetchTotals();
+  }, [filter, transactions]);
 
   const handleDelete = async (id, isRecurring) => {
     if (!window.confirm("Are you sure you want to delete this?")) return;
@@ -126,18 +99,11 @@ export default function Transaction({ type }) {
         { is_deleted: true },
         { withCredentials: true }
       );
-      setTransactions(prev => prev.filter(item => item.id !== id));  
-      fetchTotals(filter);
+      fetchData();
     } catch (err) {
       console.error("Error deleting:", err);
       alert("Failed to delete");
     }
-  };
-
-  const handleNewTransaction = (newTransaction) => {
-    setTransactions(prev => [...prev, newTransaction]);
-    filterData([...transactions, newTransaction], filter);
-    fetchTotals(filter);
   };
 
   return (
@@ -169,12 +135,10 @@ export default function Transaction({ type }) {
           </div>
         </div>
 
-        {openForm && <TransactionForm onClose={() => setOpenForm(false)} refreshData={fetchData} type={type} selectedTransaction={selectedTransaction} onTransactionAdded={handleNewTransaction} />}
+        {openForm && <TransactionForm onClose={() => setOpenForm(false)} refreshData={fetchData} type={type} selectedTransaction={selectedTransaction} />}
 
         {loading ? (
           <p>Loading...</p>
-        ) : filteredTransactions.length === 0 ? (
-          <p>No transactions found.</p>
         ) : (
           <table className={styles.transactionTable}>
             <thead>
@@ -183,6 +147,7 @@ export default function Transaction({ type }) {
                 <th>Description</th>
                 <th>Amount</th>
                 <th>Currency</th>
+                <th>Category</th>
                 {filter === "fixed" && <th>Date</th>}
                 {filter === "recurring" && (
                   <>
@@ -191,36 +156,41 @@ export default function Transaction({ type }) {
                     <th>Frequency</th>
                   </>
                 )}
-                <th>Category</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredTransactions.map((transaction) => (
-                <tr key={transaction.id}>
-                  <td>{transaction.title}</td>
-                  <td>{transaction.description || "No description"}</td>
-                  <td>{transaction.amount}</td>
-                  <td>{transaction.currency}</td>
-                  {filter === "fixed" && <td>{transaction.date_time}</td>}
-                  {filter === "recurring" && (
-                    <>
-                      <td>{transaction.start_date}</td>
-                      <td>{transaction.end_date}</td>
-                      <td>{transaction.frequency}</td>
-                    </>
-                  )}
-                  <td>{categories[transaction.category_id] || "Uncategorized"}</td>
-                  <td>
-                    <button className={styles.editButton} onClick={() => { setSelectedTransaction(transaction); setOpenForm(true); }}>
-                      <FiEdit />
-                    </button>
-                    <button className={styles.deleteButton} onClick={() => handleDelete(transaction.id, !!transaction.frequency)}>
-                      <FiTrash2 />
-                    </button>
-                  </td>
+              {filteredTransactions.length === 0 ? (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: "center" }}>No transactions found.</td>
                 </tr>
-              ))}
+              ) : (
+                filteredTransactions.map((transaction) => (
+                  <tr key={transaction.id}>
+                    <td>{transaction.title}</td>
+                    <td>{transaction.description || "No description"}</td>
+                    <td>{transaction.amount}</td>
+                    <td>{transaction.currency}</td>
+                    <td>{categories[transaction.category_id] || "Uncategorized"}</td>
+                    {filter === "fixed" && <td>{transaction.date_time}</td>}
+                    {filter === "recurring" && (
+                      <>
+                        <td>{transaction.start_date}</td>
+                        <td>{transaction.end_date}</td>
+                        <td>{transaction.frequency}</td>
+                      </>
+                    )}
+                    <td>
+                      <button className={styles.editButton} onClick={() => { setSelectedTransaction(transaction); setOpenForm(true); }}>
+                        <FiEdit />
+                      </button>
+                      <button className={styles.deleteButton} onClick={() => handleDelete(transaction.id, !!transaction.frequency)}>
+                        <FiTrash2 />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         )}

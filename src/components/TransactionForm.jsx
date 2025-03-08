@@ -92,7 +92,7 @@ export default function TransactionForm({ onClose, refreshData, type, selectedTr
         } else {
           baseData.frequency = frequency;
           baseData.start_date = startDate;
-          baseData.endDate = endDate;
+          baseData.end_date  = endDate;
           await axios.post(`${API_URL}/recurring_${type}`, baseData, { withCredentials: true });
         }
       }
