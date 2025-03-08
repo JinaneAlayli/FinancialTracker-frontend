@@ -1,105 +1,135 @@
-.homeContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 20px;
-  }
-  
-  .greetingSection {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: url("../assets/transaction.png") center/cover no-repeat;
-    padding: 20px;
-    border-radius: 10px;
-    color: white;
-  }
-  
-  .greetingContent {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-  
-  .greetingContent img {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .greetingText h2 {
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  .greetingText p {
-    font-size: 14px;
-    opacity: 0.8;
-  }
-  
-  .goalSelectContainer {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .goalSelectContainer label {
-    font-size: 16px;
-    font-weight: bold;
-  }
-  
-  .goalSelect {
-    padding: 8px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.welcomeBox {
+  display: flex;
+  align-items: center;  
+  gap: 10px;
+  background: url("../assets/transaction.png") center/cover no-repeat;
+  padding: 15px;
+  border-radius: 10px;
+  color: #023047;
+}
+
+.hiIcon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 20px;
+}
+
+.greetingText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+}
+
+.greetingText h2 {
+  margin: 0;
+}
+
+.date {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-top: 3px;
+}
+
+ 
+.motivationBox {
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 10px;
+  color: #023047;
+ }
+ 
+.goalSelectContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.goalSelect {
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+ 
+.chartsContainer {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+}
+
+.chartBox {
+  flex: 1;
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+ 
+.reminderContainer {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  background: #f8f9fa;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.reminderGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.incomeBox, .expenseBox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.incomeBox {
+  background: #e6f4ea;
+  color: #2e7d32;
+}
+
+.expenseBox {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.incomeIcon {
+  color: #2e7d32;
+  font-size: 20px;
+}
+
+.expenseIcon {
+  color: #c62828;
+  font-size: 20px;
+}
+
+@media (max-width: 768px) {
   .chartsContainer {
-    display: flex;
-    gap: 20px;
-    justify-content: space-between;
+    flex-direction: column;
   }
-  
-  .chartBox {
-    flex: 1;
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  .reminderGrid {
+    grid-template-columns: 1fr;
   }
-  
-  .smallChartsContainer {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .smallChart {
-    flex: 1;
-    background: white;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .motivationMessage {
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 10px;
-    color: #fff;
-  }
-  
-  .motivationPositive {
-    background-color: #4caf50; 
-  }
-  
-  .motivationWarning {
-    background-color: #ff9800; 
-  }
-  
-  .motivationDanger {
-    background-color: #f44336; 
-  }
-  
+}
+.noDataMessage {
+  text-align: center;
+  font-size: 16px;
+  color: gray;
+  font-weight: bold;
+  margin-top: 20px;
+}
