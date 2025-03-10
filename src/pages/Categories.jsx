@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DashboardLayout from "../layouts/DashboardLayout";
+import styles from "../styles/Categories.module.css";
  
 
 export default function Categories() {
@@ -52,16 +53,14 @@ export default function Categories() {
     return (
         <DashboardLayout>
         <Container maxWidth="md">
-            <Typography variant="h4" gutterBottom>Categories</Typography>
-            
             <TextField 
                 label="New Category" 
                 value={newCategory} 
                 onChange={(e) => setNewCategory(e.target.value)} 
-                fullWidth 
+                sx={{ width: "60%" }}
                 margin="normal"
             />
-            <FormControl fullWidth margin="normal">
+            <FormControl sx={{ width: "60%" }} margin="normal">
                 <InputLabel>Category Type</InputLabel>
                 <Select
                     value={categoryType}
@@ -71,25 +70,25 @@ export default function Categories() {
                     <MenuItem value="expense">Expense</MenuItem>
                 </Select>
             </FormControl>
-            <Button variant="contained" color="primary" onClick={handleAddCategory}>
+            <div><Button sx={{ color:"white", backgroundColor:"#ff9a00", }} className={styles.addButton} onClick={handleAddCategory}>
                 Add Category
-            </Button>
+            </Button></div>
 
             {error && <Typography color="error">{error}</Typography>}
 
-            <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+            <TableContainer component={Paper} className={styles.tableContainer}>
                 <Table>
-                    <TableHead>
+                    <TableHead className={styles.tableHead}>
                         <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Type</TableCell>
-                            <TableCell>Actions</TableCell>
+                            <TableCell sx={{ color:"white" }}>ID</TableCell>
+                            <TableCell sx={{ color:"white" }}>Name</TableCell>
+                            <TableCell sx={{ color:"white" }}>Type</TableCell>
+                            <TableCell sx={{ color:"white" }}>Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {categories.map((category) => (
-                            <TableRow key={category.id}>
+                            <TableRow key={category.id} className={styles.tableRow}>
                                 <TableCell>{category.id}</TableCell>
                                 <TableCell>{category.name}</TableCell>
                                 <TableCell>{category.type}</TableCell>
