@@ -1,5 +1,5 @@
 import { Drawer, List, ListItem, ListItemText, ListItemIcon } from "@mui/material";
-import { Dashboard, Category, MonetizationOn, Payment } from "@mui/icons-material";
+import { Dashboard, Category, MonetizationOn, Payment, BarChart, TrendingUp} from "@mui/icons-material";
 import { Link } from "react-router-dom";
 
 export default function Sidebar({ open, onClose }) {
@@ -21,6 +21,14 @@ export default function Sidebar({ open, onClose }) {
         <ListItem button component={Link} to="/expenses">
           <ListItemIcon><Payment /></ListItemIcon>
           <ListItemText primary="Expenses" />
+        </ListItem>
+        <ListItem button component={Link} to="/reports">
+          <ListItemIcon><BarChart /></ListItemIcon>
+          <ListItemText primary="Reports" />
+        </ListItem>
+        <ListItem button component={Link} to="/profitgoals">
+          <ListItemIcon><TrendingUp /></ListItemIcon>
+          <ListItemText primary="Profit Goals" />
         </ListItem>
       </List>
     </Drawer>
