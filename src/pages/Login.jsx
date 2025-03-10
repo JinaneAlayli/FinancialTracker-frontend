@@ -57,7 +57,7 @@ export default function Login() {
           textAlign: "center",
         }}
       >
-        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
+        <Typography variant="h4" sx={{ fontFamily: "Times New Roman", color: "#002D46", fontWeight: "bold", mb: 2 }}>
           LOGIN
         </Typography>
         {error && <Alert severity="error">{error}</Alert>}
@@ -67,8 +67,28 @@ export default function Login() {
             label="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            margin="normal"
-            variant="outlined"
+            variant="filled"
+            InputLabelProps={{ shrink: email !== "" }}
+            sx={{
+              backgroundColor: "#f8f8f8",
+              border:"solid 2px #002D46",
+              borderRadius: "10px",
+              "& .MuiFilledInput-root": {
+                borderRadius: "10px",
+                padding: "10px",
+                fontSize: "medium",
+              },
+              "& .MuiInputBase-root": {
+                fontWeight: "bold",
+                color: "#333",
+              },
+              "& .MuiFilledInput-root::before, & .MuiFilledInput-root::after": {
+                display: "none",
+              },
+              "&:hover": {
+                backgroundColor: "#f0f0f0",
+              },
+            }}
           />
           <TextField
             fullWidth
@@ -76,17 +96,39 @@ export default function Login() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            margin="normal"
-            variant="outlined"
+            variant="filled"
+            InputLabelProps={{ shrink: password !== "" }}
+            sx={{
+              backgroundColor: "#f8f8f8",
+              border:"solid 2px #002D46",
+              borderRadius: "10px",
+              "& .MuiFilledInput-root": {
+                borderRadius: "10px",
+                padding: "10px",
+                fontSize: "medium",
+              },
+              "& .MuiInputBase-root": {
+                fontWeight: "bold",
+                color: "#333",
+              },
+              "& .MuiFilledInput-root::before, & .MuiFilledInput-root::after": {
+                display: "none",
+              },
+              "&:hover": {
+                backgroundColor: "#f0f0f0",
+              },
+            }}
           />
           <Button
             variant="contained"
-            fullWidth
             type="submit"
             sx={{
               backgroundColor: "#002D46",
               color: "white",
               fontWeight: "bold",
+              width: "50%",
+              padding: "10px",
+              fontSize: "medium",
               mt: 2,
               "&:hover": {
                 backgroundColor: "#001a29",
@@ -96,8 +138,8 @@ export default function Login() {
             Login
           </Button>
         </form>
-        <Typography variant="body2" sx={{ mt: 2 }}>
-          Don't have an account? <Link to="/signup" style={{ color: "#E69C00", textDecoration: "none" }}>Register here</Link>
+        <Typography variant="body2" sx={{ mt: 2, fontFamily: "Times New Roman", fontWeight: "semi-bold", color: "#002D46" }}>
+          Don't have an account? <Link to="/signup" style={{ color: "#E69C00", textDecoration: "none", fontWeight: "bold" }}>Register here</Link>
         </Typography>
       </Box>
     </Box>
