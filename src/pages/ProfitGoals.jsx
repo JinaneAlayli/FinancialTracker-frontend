@@ -5,14 +5,16 @@ import {
     updateProfitGoal,
     deleteProfitGoal
 } from "./profitGoalService.jsx";
-import { Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
-import DashboardLayout from "../layouts/DashboardLayout"; 
+import { Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,InputLabelProps } from "@mui/material";
+import DashboardLayout from "../layouts/DashboardLayout";
+
+const darkBlue = "#002147";
 
 const ProfitGoals = () => {
     const [profitGoals, setProfitGoals] = useState([]);
     const [form, setForm] = useState({ target_amount: "", currency: "", target_date: "" });
     const [editingId, setEditingId] = useState(null);
- 
+
     useEffect(() => {
         loadProfitGoals();
     }, []);
@@ -65,7 +67,6 @@ const ProfitGoals = () => {
     return (
         <DashboardLayout>
             <div>
-                <h2></h2>
                 <form onSubmit={handleSubmit} style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
                     <TextField
                         label="Target Amount"
@@ -74,6 +75,7 @@ const ProfitGoals = () => {
                         value={form.target_amount}
                         onChange={handleInputChange}
                         required
+                        sx={{ borderColor: darkBlue }}
                     />
                     <TextField
                         label="Currency"
@@ -81,6 +83,7 @@ const ProfitGoals = () => {
                         value={form.currency}
                         onChange={handleInputChange}
                         required
+                        sx={{ borderColor: darkBlue }}
                     />
                     <TextField
                         label="Date"
@@ -90,8 +93,9 @@ const ProfitGoals = () => {
                         onChange={handleInputChange}
                         required
                         InputLabelProps={{ shrink: true }}
+                        sx={{ borderColor: darkBlue }}
                     />
-                    <Button type="submit" variant="contained" color="primary">
+                    <Button type="submit" variant="contained" sx={{ backgroundColor:"#023047", color: "white" }}>
                         {editingId ? "Update" : "Add"}
                     </Button>
                 </form>
@@ -99,12 +103,12 @@ const ProfitGoals = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>ID</TableCell>
-                                <TableCell>Target Amount</TableCell>
-                                <TableCell>Currency</TableCell>
-                                <TableCell>Date</TableCell>
-                                <TableCell>Actions</TableCell>
+                            <TableRow style={{ backgroundColor:"#023047" }}>
+                                <TableCell style={{ color: "white" }}>ID</TableCell>
+                                <TableCell style={{ color: "white" }}>Target Amount</TableCell>
+                                <TableCell style={{ color: "white" }}>Currency</TableCell>
+                                <TableCell style={{ color: "white" }}>Date</TableCell>
+                                <TableCell style={{ color: "white" }}>Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -115,10 +119,10 @@ const ProfitGoals = () => {
                                     <TableCell>{goal.currency}</TableCell>
                                     <TableCell>{goal.target_date}</TableCell>
                                     <TableCell>
-                                        <Button onClick={() => handleEdit(goal)} variant="outlined" color="secondary">
+                                        <Button onClick={() => handleEdit(goal)} variant="outlined" sx={{ borderColor: darkBlue, color: darkBlue }}>
                                             Edit
                                         </Button>
-                                        <Button onClick={() => handleDelete(goal.id)} variant="outlined" color="error" style={{ marginLeft: "10px" }}>
+                                        <Button onClick={() => handleDelete(goal.id)} variant="outlined" color="error" sx={{ marginLeft: "10px" }}>
                                             Delete
                                         </Button>
                                     </TableCell>
