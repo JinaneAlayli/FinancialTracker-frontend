@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Card, CardContent, Typography } from "@mui/material";
+import { Grid, Card, CardContent, Typography, Select, MenuItem } from "@mui/material";
 import { Pie, Bar, Line } from "react-chartjs-2";
 import axios from "axios";
 import { API_URL } from "../config/api";
@@ -7,7 +7,6 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearSca
 import DashboardLayout from "../layouts/DashboardLayout";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, PointElement, LineElement);
- 
 
 const Reports = () => {
     const [reportData, setReportData] = useState(null);
@@ -19,7 +18,7 @@ const Reports = () => {
 
     const fetchReport = async () => {
         try {
-            const response = await axios.get(`${API_URL}/reports?filter=${filter}`,{ withCredentials: true });
+            const response = await axios.get(`${API_URL}/reports?filter=${filter}`, { withCredentials: true });
             setReportData(response.data);
         } catch (err) {
             console.error("Error fetching report:", err);
@@ -27,6 +26,17 @@ const Reports = () => {
     };
 
     if (!reportData) return <p>Loading...</p>;
+
+    // Chart Options (Smaller Size)
+    const chartOptions = {
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: {
+            legend: {
+                position: "bottom",
+            },
+        },
+    };
 
     // Prepare Pie Chart Data (Income vs. Expenses)
     const pieData = {
@@ -63,12 +73,14 @@ const Reports = () => {
                 label: "Income",
                 data: incomeAmounts,
                 borderColor: "#36A2EB",
+                borderWidth: 2,
                 fill: false,
             },
             {
                 label: "Expense",
                 data: expenseAmounts,
                 borderColor: "#FF6384",
+                borderWidth: 2,
                 fill: false,
             },
         ],
@@ -77,19 +89,24 @@ const Reports = () => {
     return (
         <DashboardLayout>
             <div>
-                <Typography variant="h4">Reports</Typography>
-                <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="yearly">Yearly</option>
-                </select>
+                <Select
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value)}
+                    sx={{ marginBottom: 3, width: "200px" }}
+                >
+                    <MenuItem value="weekly">Weekly</MenuItem>
+                    <MenuItem value="monthly">Monthly</MenuItem>
+                    <MenuItem value="yearly">Yearly</MenuItem>
+                </Select>
 
-                <Grid container spacing={3} style={{ marginTop: "20px" }}>
+                <Grid container spacing={3}>
                     <Grid item xs={12} md={6}>
                         <Card>
                             <CardContent>
                                 <Typography variant="h6">Income vs. Expenses</Typography>
-                                <Pie data={pieData} />
+                                <div style={{ height: "200px" }}>
+                                    <Pie data={pieData} options={chartOptions} />
+                                </div>
                             </CardContent>
                         </Card>
                     </Grid>
@@ -98,7 +115,9 @@ const Reports = () => {
                         <Card>
                             <CardContent>
                                 <Typography variant="h6">Net Profit</Typography>
-                                <Bar data={barData} />
+                                <div style={{ height: "200px" }}>
+                                    <Bar data={barData} options={chartOptions} />
+                                </div>
                             </CardContent>
                         </Card>
                     </Grid>
@@ -107,7 +126,9 @@ const Reports = () => {
                         <Card>
                             <CardContent>
                                 <Typography variant="h6">Income & Expenses Over Time</Typography>
-                                <Line data={lineData} />
+                                <div style={{ height: "250px" }}>
+                                    <Line data={lineData} options={chartOptions} />
+                                </div>
                             </CardContent>
                         </Card>
                     </Grid>

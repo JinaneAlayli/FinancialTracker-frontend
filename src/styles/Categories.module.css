@@ -1,0 +1,81 @@
+.filterContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 50px;
+    width: 100%;
+    gap: 20px;
+}
+
+.filterWrapper {
+    display: flex;
+    align-items: center;
+    width: 30%;
+    min-width: 200px;
+    position: relative;
+}
+
+.filterSelect {
+    flex: 1;
+    font-size: 16px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    appearance: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filterIcon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 20px;
+    color: #023047;
+}
+
+.addButton {
+    background: #ffb703;
+    color: white;
+    font-size: 16px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    min-width: 140px;
+    text-align: center;
+}
+
+.addButton:hover {
+    background: #ff9a00;
+}
+
+/* categories.module.css */
+
+/* Dark Blue Table Header */
+.tableContainer {
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tableHead {
+    background-color: #023047;
+    color: rgb(255, 255, 255);
+}
+
+.tableHead th {
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 12px;
+}
+
+/* Hover effect for rows */
+.tableRow:hover {
+    background-color: #f1f5f9;
+    transition: background-color 0.3s ease;
+}
