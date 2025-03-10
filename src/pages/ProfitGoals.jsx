@@ -5,7 +5,7 @@ import {
     updateProfitGoal,
     deleteProfitGoal
 } from "./profitGoalService.jsx";
-import { Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,InputLabelProps } from "@mui/material";
+import { Button, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import DashboardLayout from "../layouts/DashboardLayout";
 
 const darkBlue = "#002147";
